@@ -43,9 +43,29 @@
             margin-top: 30px;
             min-height: 40px;
         }
-        <footer style="position: fixed; bottom: 0; width: 100%; background: #ff6b6b; color: white; text-align: center; padding: 10px;">
-            © 2025 今天吃什么？随机选择器 | 开发者：canjisam
-        </footer>
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #ff6b6b;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 1;
+        }
+        #copy-notification {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            display: none;
+            animation: fadeInOut 2.5s;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -136,36 +156,22 @@
                 document.getElementById('result').textContent = getRandomFood(allFoods);
             });
         }
-        #copy-notification {
-            position: fixed;
-            bottom: 60px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            display: none;
-            animation: fadeInOut 2.5s;
-        }
 
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(20px); }
-            15% { opacity: 1; transform: translateY(0); }
-            85% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-20px); }
-        }
+    </script>
+    <div id="copy-notification"></div>
+    <footer>© 2024 今天吃什么？随机选择器 - 让选择美食变得简单有趣</footer>
+    <script>
+        document.addEventListener('copy', function(e) {
+            const selection = window.getSelection().toString();
+            if (selection) {
+                const notification = document.getElementById('copy-notification');
+                notification.textContent = `内容来自【今天吃什么？随机选择器】\n${selection}`;
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 2500);
+            }
+        });
     </script>
 </body>
 </html>
-document.addEventListener('copy', function(e) {
-        const selection = window.getSelection().toString();
-        if (selection) {
-            const notification = document.getElementById('copy-notification');
-            notification.textContent = `内容来自【今天吃什么？随机选择器】\n${selection}`;
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 2500);
-        }
-    });
