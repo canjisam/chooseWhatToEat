@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天吃什么？</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f0f5f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+        button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 20px 0;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        #result {
+            font-size: 24px;
+            color: #2d3436;
+            margin-top: 30px;
+            min-height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>今天吃什么？</h1>
+        <button onclick="chooseFood()">帮我决定！</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const foods = [
+            '火锅', '披萨', '寿司', '拉面',
+            '麻辣烫', '汉堡', '饺子', '咖喱饭',
+            '烧烤', '炸鸡', '沙拉', '牛排'
+        ];
+
+        function chooseFood() {
+            const resultElement = document.getElementById('result');
+            let count = 0;
+            const animation = setInterval(() => {
+                resultElement.textContent = foods[Math.floor(Math.random() * foods.length)];
+                count++;
+                if(count > 10) clearInterval(animation);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
