@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>今天吃什么？</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <!-- Updated container layout -->
-    <div class="container" style="float: left;" >
 
-        <div class="card-left">
-            <h1>今天吃什么？</h1>
-            <div class="button-group">
-                <button class="category-btn" onclick="chooseByCategory()">分类随机</button>
-                <button class="all-btn" onclick="chooseAll()">全部随机</button>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="card-left">
+                <h1>今天吃什么？</h1>
+                <div class="button-group">
+                    <button class="category-btn" onclick="chooseByCategory()">分类随机</button>
+                    <button class="all-btn" onclick="chooseAll()">全部随机</button>
+                </div>
+                <div id="result"></div>
             </div>
-            <div id="result"></div>
         </div>
-        <div class="card-right">
-            <!-- New button group for real-time image generation -->
-            <div class="image-buttons">
-                <button onclick="generateParamImage()">生成</button>
+    </div>
+    <div class="container">
+        <div class="form-section">
+            <div class="card-left">
+                <button onclick="generateText()">感觉图片不对</button>
+                <div id="generatedText"></div>
+                <div class="image-section">
+                    <div id="generated-img"></div>
+                </div>
             </div>
-            <img id="generated-img" src="https://image.pollinations.ai/prompt/吃什么?width=360&height=360&seed=42&model=flux" alt="点击美食图片" />
         </div>
     </div>
     
     <div id="copy-notification"></div>
     <footer>© 2025 今天吃什么？随机选择器 - 让选择美食变得简单有趣</footer>
     <script src="app.js"></script>
+
 </body>
+
 </html>

@@ -15,6 +15,10 @@ function animateSelection(callback) {
         callback();
         if (++count > 10) clearInterval(animation);
     }, 100);
+
+    setTimeout(() => {
+        generateText();
+    },500);
 }
 
 function chooseByCategory() {
@@ -33,31 +37,6 @@ function chooseAll() {
     });
 }
 
-function generateParamImage() {
-    // Show loading message
-    const loadingMessage = document.getElementById('loading-message');
-    loadingMessage.style.display = 'block';
-
-    // Set image source to parameterized prompt URL
-    const param = document.getElementById('result').textContent.split(' · ')[1] || '今天吃什么？';
-    // Ensure the parameter is URL-safe
-    const safeParam = encodeURIComponent(param);
-    // Set the image source to the generated image URL
-    const url = `https://image.pollinations.ai/prompt/${safeParam}?width=360&height=360&seed=42&model=flux`;
-
-    const img = document.getElementById("generated-img");
-    img.onload = () => {
-        // Hide loading message when image is loaded
-        loadingMessage.style.display = 'none';
-    };
-    img.onerror = () => {
-        // Hide loading message and show error if image fails to load
-        loadingMessage.style.display = 'none';
-        alert('图片加载失败，请重试！');
-    };
-    img.src = url;
-}
-
 document.addEventListener('copy', function(e) {
     const selection = window.getSelection().toString();
     if (selection) {
@@ -69,3 +48,35 @@ document.addEventListener('copy', function(e) {
         }, 2500);
     }
 });
+
+async function generateText() {
+    const prompt = document.getElementById('result').textContent + "先整理对这个食物的理解，根据这个理解返回一个用于AI生成图片的提示词，只返回提示词的详细描述，不要返回任何其他内容。";
+
+    try {
+        const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        document.getElementById('generatedText').innerHTML = `<p>提示词:${text}</p>`;
+        // 使用生成的文本作为提示词生成图片
+        generateImage(text);
+    } catch (error) {
+        console.error('Error generating text:', error);
+        // alert('生成文本失败');
+    }
+}
+
+async function generateImage(prompt) {
+    try {
+        const response = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const imageUrl = response.url;
+        document.getElementById('generated-img').innerHTML = `<img src="${imageUrl}" alt="Generated Image">`;
+    } catch (error) {
+        console.error('Error generating image:', error);
+        // alert('生成图片失败');
+    }
+}
