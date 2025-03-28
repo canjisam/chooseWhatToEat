@@ -11,10 +11,12 @@ body {
 .container {
     text-align: center;
     background: white;
-    padding: 40px;
+    padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-top: 50px;
+    margin-top: 20px;
+    width: 90%;
+    max-width: 800px;
 }
 button {
     background-color: #ff6b6b;
@@ -58,4 +60,54 @@ footer {
     display: none;
     animation: fadeInOut 2.5s;
     z-index: 2;
+}
+
+#generated-img img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    object-fit: contain;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 15px;
+        margin-top: 10px;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 16px;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    #result {
+        font-size: 20px;
+    }
+
+    body {
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    #generated-img img {
+        max-width: 100%;
+    }
 }
