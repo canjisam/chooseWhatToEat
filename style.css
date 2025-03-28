@@ -76,6 +76,17 @@ footer {
     flex-wrap: wrap;
 }
 
+#saveImageBtn {
+    background-color: #4CAF50;
+    margin-top: 10px;
+    width: auto;
+    padding: 10px 20px;
+}
+
+#saveImageBtn:hover {
+    background-color: #45a049;
+}
+
 @media screen and (max-width: 768px) {
     .container {
         padding: 15px;
