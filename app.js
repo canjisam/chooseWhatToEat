@@ -48,79 +48,79 @@ document.addEventListener('copy', function(e) {
         }, 2500);
     }
 });
-
 async function generateText() {
     const foodText = document.getElementById('result').textContent;
-    const basePrompt = `你只要告诉我提示词是什么，不要返回任何其他内容。你先对${foodText}这个食物进行理解和外貌特征想象，尽可能详细地返回一个可以用于AI生成这个关键词相关的图片的提示词。`;
+    const basePrompt = `你只要告诉我提示词是什么，不要返回任何其他内容。你先对${foodText}这个食物进行外貌特征总结，尽可能详细地返回一个可以用于AI生成这个关键词相关的照片风格的英文提示词。`;
+    
+    const models = ['openai', 'openai-large', 'deepseek-r1', 'deepseek-r1-llama', 'qwen-reasoning', 'gemini-thinking', 'midijourney','hypnosis-tracy'];
+    const resultsContainer = document.getElementById('generated-img');
+    resultsContainer.style.display = 'grid';
+    resultsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+    resultsContainer.style.gap = '20px';
+    resultsContainer.style.padding = '20px';
+    resultsContainer.innerHTML = '';
+    
     try {
-        //const systemToken = '- Role: AI绘画家 - Background: 用户需要根据关键词生成AI绘画的提示词，以便通过AI工具创作出符合要求的绘画作品。 - Profile: 你是一位精通绘画技巧和视觉艺术的AI绘画家，对各种食物的外观特征有着精准的把握，能够将食物的形状、颜色、质感等细节转化为清晰的绘画指令。 - Skills: 你具备丰富的绘画知识，包括色彩理论、构图原则、光影效果等，能够将抽象的关键词转化为具体的视觉元素，并以简洁明了的语言表达出来。 - Goals: 根据用户提供的关键词，生成详细的AI绘画提示词，帮助用户通过AI工具绘制出具有逼真感和艺术感的食物图像。 - Constrains: 提示词应简洁明了，避免过于复杂或模糊的描述，确保AI绘画工具能够准确理解和执行。 - OutputFormat: 文字描述，包括食物的形状、颜色、质感、光影效果等关键绘画元素。 - Workflow: 1. 确定关键词所对应的食物名称。 2. 分析该食物的典型外观特征，包括形状、颜色、质感等。 3. 将这些特征转化为具体的绘画描述，确保语言简洁明了，便于AI工具理解和执行。 - Examples: - 关键词：苹果 提示词：“绘制一个红富士苹果，形状为圆形，表面光滑，颜色为鲜红色，带有少量绿色斑点，顶部有绿色的叶子，背景为简单的白色，光影效果突出苹果的立体感。” - 关键词：汉堡 提示词：“绘制一个三层汉堡，最底层是金黄色的面包，中间夹有生菜、番茄片、牛肉饼和芝士片，最上层是面包，面包表面有芝麻，整体颜色丰富，质感逼真，背景为木质餐桌，光影效果自然。” - 关键词：寿司 提示词：“绘制一份寿司拼盘，包括三文鱼寿司、黄瓜寿司和加州卷。寿司形状为长条形，米饭为白色，三文鱼为橙红色，黄瓜为绿色，加州卷上有蟹肉棒和牛油果，背景为日式风格的木盘，光影效果突出食材的新鲜感。” ';
-        // 构建文本生成API参数
-        const params = new URLSearchParams({
-            model: 'midijourney',  
-            //seed: Math.floor(Math.random() * 1000000), 
-            //json: 'true',      
-            //system: encodeURIComponent(systemToken), 
-            private: 'true'    
-        });
-
-        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(basePrompt)}?${params.toString()}`;
-        
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        let text;
-        if (params.get('json') === 'true') {
-            const jsonResponse = await response.json();
-            text = jsonResponse.text || jsonResponse.response || jsonResponse.message;
-        } else {
-            text = await response.text();
-        }
-
-        document.getElementById('generatedText').innerHTML = `<p>提示词: ${text}</p>`;
-        document.getElementById('generated-img').innerHTML = '<p>正在生成图片...</p>';
-        generateImage(text);
-        
+        await Promise.all(models.map(async model => {
+            try {
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(basePrompt)}?model=${model}&private=true`);
+                const promptText = await response.text();
+                
+                const modelContainer = document.createElement('div');
+                modelContainer.className = 'model-container';
+                modelContainer.style.border = '1px solid #ddd';
+                modelContainer.style.borderRadius = '8px';
+                modelContainer.style.padding = '10px';
+                modelContainer.style.backgroundColor = '#f9f9f9';
+                modelContainer.innerHTML = `
+                    <h3 style="margin-top:0;z-index:999;">${model}</h3>
+                    <div class="model-image" id="${model}-image" style="height:300px;display:flex;align-items:center;justify-content:center;"><p>正在生成图片...</p></div>
+                    <div style="display:flex;gap:10px;margin-top:10px;">
+                        <button class="btn btn-regenerate" onclick="regenerateImage('${model}', '${encodeURIComponent(promptText)}')" style="flex:1;">感觉图片不对</button>
+                        <button class="btn btn-save" onclick="saveImage('${model}')" style="flex:1;">保存图片</button>
+                    </div>
+                `;
+                resultsContainer.appendChild(modelContainer);
+                await generateImageForModel(model, promptText);
+            } catch (error) {
+                console.error(`Error processing model ${model}:`, error);
+                document.getElementById(`${model}-image`).innerHTML = '<p>生成失败，请重试</p>';
+            }
+        }));
     } catch (error) {
         console.error('Error generating text:', error);
         document.getElementById('generatedText').innerHTML = '<p>生成提示词失败，请重试</p>';
     }
 }
 
-async function generateImage(prompt) {
+async function generateImageForModel(model, prompt) {
     try {
         const params = new URLSearchParams({
-            model: 'flux',    // 使用 turbo 模型进行快速生成
-            width: '512',      
+            model: 'flux',
+            width: '512',
             height: '512',
-            // seed: Math.floor(Math.random() * 1000000),
-            safe: 'true',      
-            enhance: 'true',   
-            nologo: 'true',    
-            private: 'true'    
+            private: 'true'
         });
         
-
         const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
-        
         const response = await fetch(apiUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const imageUrl = response.url;
-        document.getElementById('generated-img').innerHTML = `<img src="${imageUrl}" alt="Generated Image">`;
-        document.getElementById('saveImageBtn').style.display = 'block'; // 显示保存按钮
+        
+        document.getElementById(`${model}-image`).innerHTML = `<img src="${imageUrl}" alt="Generated by ${model}">`;
     } catch (error) {
-        console.error('Error generating image:', error);
-        document.getElementById('generatedText').innerHTML = '<p>生成图片失败，请重试</p>';
-        document.getElementById('saveImageBtn').style.display = 'none'; // 隐藏保存按钮
+        console.error(`Error generating image for ${model}:`, error);
+        document.getElementById(`${model}-image`).innerHTML = '<p>生成图片失败</p>';
     }
 }
 
-async function saveImage() {
+function regenerateImage(model, prompt) {
+    document.getElementById(`${model}-image`).innerHTML = '<p>正在重新生成图片...</p>';
+    generateImageForModel(model, decodeURIComponent(prompt));
+}
+
+async function saveImage(model) {
     try {
-        const img = document.querySelector('#generated-img img');
+        const img = document.querySelector(`#${model}-image img`);
         if (!img) {
             throw new Error('No image found');
         }
@@ -128,7 +128,7 @@ async function saveImage() {
         // 创建一个临时的a标签用于下载
         const link = document.createElement('a');
         const foodName = document.getElementById('result').textContent.replace(/[\/\\:*?"<>|]/g, '_');
-        link.download = `食物图片_${foodName}_${new Date().getTime()}.png`;
+        link.download = `食物图片_${foodName}_${model}_${new Date().getTime()}.png`;
         
         // 使用fetch获取图片并转换为blob
         const response = await fetch(img.src);
@@ -152,4 +152,66 @@ async function saveImage() {
         console.error('Error saving image:', error);
         alert('保存图片失败，请重试');
     }
+}
+
+
+async function testAllModels() {
+    const models = await fetch('./model.json').then(res => res.json());
+    const resultsContainer = document.getElementById('modelResults');
+    
+    for (const model of models) {
+        const modelCard = document.createElement('div');
+        modelCard.className = 'model-card';
+        modelCard.innerHTML = `
+            <h3>${model.name} (${model.description})</h3>
+            <div class="model-content">
+                <div class="model-text"></div>
+                <div class="model-image"></div>
+            </div>
+        `;
+        resultsContainer.appendChild(modelCard);
+        
+        await testModel(model, modelCard);
+    }
+}
+
+async function testModel(model, cardElement) {
+    const foodText = '担担面';
+    const basePrompt = `你只要告诉我提示词是什么，不要返回任何其他内容。你先对${foodText}这个食物总结外貌特征，尽可能详细地返回一个可以用于AI生成这个关键词相关的图片的英文提示词。`;
+    
+    try {
+        // 文本生成
+        const textParams = new URLSearchParams({
+            model: model.name,
+            private: 'true'
+        });
+        
+        const textApiUrl = `https://text.pollinations.ai/${encodeURIComponent(basePrompt)}?${textParams.toString()}`;
+        const textResponse = await fetch(textApiUrl);
+        const promptText = await textResponse.text();
+        
+        cardElement.querySelector('.model-text').innerHTML = `<p>提示词: ${promptText}</p>`;
+        
+        // 图片生成
+        const imageParams = new URLSearchParams({
+            model: 'flux',
+            width: '512',
+            height: '512',
+            private: 'true'
+        });
+        
+        const imageApiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?${imageParams.toString()}`;
+        const imageResponse = await fetch(imageApiUrl);
+        const imageUrl = imageResponse.url;
+        
+        cardElement.querySelector('.model-image').innerHTML = `<img src="${imageUrl}" alt="Generated by ${model.name}">`;
+    } catch (error) {
+        console.error(`Error testing model ${model.name}:`, error);
+        cardElement.querySelector('.model-text').innerHTML = '<p>测试失败</p>';
+    }
+}
+
+// 当测试页面加载时自动运行测试
+if (window.location.pathname.includes('model_test.html')) {
+    document.addEventListener('DOMContentLoaded', testAllModels);
 }

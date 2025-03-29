@@ -238,28 +238,6 @@
         "censored": false,
         "description": "Llama (Scaleway)",
         "baseModel": true
-    },
-    {
-        "name": "openai-audio",
-        "type": "chat",
-        "censored": true,
-        "description": "OpenAI GPT-4o-audio-preview",
-        "baseModel": true,
-        "audio": true,
-        "voices": [
-            "alloy",
-            "echo",
-            "fable",
-            "onyx",
-            "nova",
-            "shimmer",
-            "coral",
-            "verse",
-            "ballad",
-            "ash",
-            "sage",
-            "amuch",
-            "dan"
-        ]
     }
+   
 ]
