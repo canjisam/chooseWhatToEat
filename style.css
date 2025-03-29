@@ -122,39 +122,3 @@ footer {
         max-width: 100%;
     }
 }
-
-.model-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.model-card h3 {
-    margin-top: 0;
-    color: #333;
-}
-
-.model-content {
-    display: flex;
-    gap: 20px;
-}
-
-.model-text {
-    flex: 1;
-    padding: 8px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-}
-
-.model-image {
-    flex: 1;
-}
-
-.model-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-}
